@@ -20,12 +20,7 @@ local darkrooms = true
 local Unknow = true
 local Slice = true
 
--- Notification 
-local Notification = Instance.new("Sound")
-Notification.Parent = workspace
-Notification.SoundId = "rbxassetid://8486683243"
-Notification.Volume = 3
-Notification:Play()
+-- Notification
 
 function GitPNG(GithubImg, ImageName)
     local url = GithubImg
@@ -43,6 +38,33 @@ function GitPNG(GithubImg, ImageName)
     return (getcustomasset or getsynasset)(ImageName .. ".png")
 end
 
+function ReplaceAudGit(GithubSnd, SoundName)
+	local url = GithubSnd
+	if not isfile(SoundName .. ".mp3") then
+		writefile(SoundName .. ".mp3", game:HttpGet(url))
+	end
+	return (getcustomasset or getsynasset)(SoundName .. ".mp3")
+end
+
+function getGitSoundId(GithubSoundPath: string, AssetName: string): Sound
+	local Url = GithubSoundPath
+
+	if not isfile(AssetName..".mp3") then 
+		writefile(AssetName..".mp3", game:HttpGet(Url)) 
+	end
+
+	local Sound = Instance.new("Sound")
+	Sound.SoundId = (getcustomasset or getsynasset)(AssetName..".mp3")
+	return Sound 
+end
+
+CustomGitSound("https://github.com/Script5039392/Entities/blob/main/horror-ambience-01-66708.mp3?raw=true", 1, "DistortSound")
+GitPNG("https://github.com/Script5039392/Png/blob/main/Asd.png?raw=true", "WhyYouSee")
+GitPNG("https://github.com/Script5039392/Png/blob/main/OH_MAY_GODU.png?raw=true", "Slice")
+GitPNG("https://github.com/Script5039392/Png/blob/main/Picsart_25-01-17_22-05-43-970.png?raw=true", "Distort")
+GitPNG("https://github.com/Script5039392/Png/blob/main/Darkness.jpg?raw=true", "Darkness")
+GitPNG("https://github.com/Script5039392/Png/blob/main/Nightmare.png?raw=true", "Nightmare")
+
 game:GetService("StarterGui"):SetCore("SendNotification",{
 	Title = "Notification",
 	Text = "Doors Darkness Mode Has Execute!",
@@ -55,6 +77,12 @@ game:GetService("StarterGui"):SetCore("SendNotification",{
 	Duration = 7,
 	Icon = GitPNG("https://github.com/Script5039392/Png/blob/main/2024_10_17_0dt_Kleki.png?raw=true", "horrorbalge")
 })
+
+local Notification = Instance.new("Sound")
+Notification.Parent = workspace
+Notification.SoundId = "rbxassetid://6073491164"
+Notification.Volume = 3
+Notification:Play()
 
 -- Loaded
 local caption = game.Players.LocalPlayer:WaitForChild("PlayerGui").MainUI.MainFrame.Caption
@@ -70,7 +98,7 @@ game.TextChatService.TextChannels.RBXGeneral:DisplaySystemMessage(`<font color='
 game.TextChatService.TextChannels.RBXGeneral:DisplaySystemMessage(`<font color='#00ff00'>{prefix..msg2}</font>`)
 game.TextChatService.TextChannels.RBXGeneral:DisplaySystemMessage(`<font color='#ffff00'>{prefix..msg3}</font>`)
 
--- Open
+---- Started
 game.ReplicatedStorage.GameData.LatestRoom.Changed:Wait()
 
 local C = game.Players.LocalPlayer.Character:WaitForChild("Collision")
@@ -111,6 +139,81 @@ wait(1.5)
 intro:Destroy()
 
 end)()
+
+-- Create the ScreenGui and Sprint Bar
+local player = game.Players.LocalPlayer
+local screenGui = Instance.new("ScreenGui")
+screenGui.Parent = player.PlayerGui
+
+local sprintBarBackground = Instance.new("Frame")
+sprintBarBackground.Size = UDim2.new(0.2, 0, 0.03, 0)  -- Half of the screen width, small height
+sprintBarBackground.Position = UDim2.new(0.8, 0, 0.51, 0)  -- Centered at top
+sprintBarBackground.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+sprintBarBackground.Parent = screenGui
+
+local sprintBar = Instance.new("Frame")
+sprintBar.Size = UDim2.new(0, 0, 1, 0)  -- Width is dynamic, height fills the background
+sprintBar.BackgroundColor3 = Color3.fromRGB(192, 192, 192)  -- Green for the sprint bar
+sprintBar.Parent = sprintBarBackground
+
+-- Sprint and Stamina Variables
+local sprinting = false
+local maxStamina = 100  -- Maximum stamina
+local currentStamina = maxStamina  -- Starting stamina
+local staminaRegenRate = 5  -- How fast stamina regenerates per second
+local staminaDrainRate = 5  -- How fast stamina drains while sprinting
+local sprintSpeed = 21     -- Sprinting speed
+local walkSpeed = 15       -- Walking speed
+
+-- Function to update the sprint bar
+local function updateSprintBar()
+    sprintBar.Size = UDim2.new(currentStamina / maxStamina, 0, 1, 0)
+end
+
+-- Mobile Button for Sprinting
+local sprintButton = Instance.new("TextButton")
+sprintButton.Size = UDim2.new(0.2, 0, 0.1, 0)  -- Size of the button
+sprintButton.Position = UDim2.new(0.8, 0, 0.4, 0)  -- Position at bottom-right corner
+sprintButton.Text = "Sprint"
+sprintButton.BackgroundColor3 = Color3.fromRGB(192, 192, 192)  -- Green button
+sprintButton.Parent = screenGui
+
+-- Toggle Sprint on Button Tap
+sprintButton.MouseButton1Click:Connect(function()
+    sprinting = not sprinting  -- Toggle sprinting state
+    if sprinting and game.Players.LocalPlayer.Character.Humanoid.MoveDirection ~= Vector3.new(0, 0, 0) then
+        -- Change walk speed to sprint speed
+        player.Character.Humanoid.WalkSpeed = sprintSpeed
+    else
+        -- Revert to walking speed
+        player.Character.Humanoid.WalkSpeed = walkSpeed
+    end
+end)
+
+-- Function to handle sprinting logic with Heartbeat to avoid infinite loop
+local runService = game:GetService("RunService")
+runService.Heartbeat:Connect(function()
+    if sprinting then
+        -- Drain stamina while sprinting
+        if currentStamina > 0 then
+            currentStamina = currentStamina - staminaDrainRate * runService.Heartbeat:Wait() -- Wait time per frame
+        else
+        require(game.Players.LocalPlayer.PlayerGui.MainUI.Initiator.Main_Game).caption("Your Exhausted", true)
+            sprinting = false  -- Stop sprinting if no stamina
+            player.Character.Humanoid.WalkSpeed = walkSpeed -- Revert speed
+        end
+    else
+
+        -- Regenerate stamina while not sprinting
+        if currentStamina < maxStamina then
+            currentStamina = currentStamina + staminaRegenRate * runService.Heartbeat:Wait() -- Wait time per frame
+        end
+    end
+
+    -- Keep stamina within bounds
+    currentStamina = math.clamp(currentStamina, 0, maxStamina)
+    updateSprintBar()
+end)
 
 ------ Functions 
 -- Fog
@@ -361,6 +464,7 @@ Darkness = false
 Nightmare = false
 local Smiler = false
 darkrooms = false
+Unknow = false
 
 end
 end)
@@ -375,12 +479,11 @@ Darkness = true
 Nightmare = true
 local Smiler = true
 darkrooms = true
+Unknow = true
 
 end
 end)
 end)()
-
-
 
 -- Unknow
 coroutine.wrap(function()
@@ -475,7 +578,7 @@ end)
 game.Workspace.Unknow.RushNew.Touched:Connect(function()
 	chr.Humanoid:TakeDamage(100)
 	game.Workspace.CurrentCamera.CFrame = CFrame.lookAt(game.Workspace.CurrentCamera.CFrame.Position, game.Workspace.Unknow.RushNew.Position)
-	game:GetService("ReplicatedStorage").GameStats["Player_".. game.Players.LocalPlayer.Name].Total.DeathCause.Value = "¿{Unknow}?"
+	game:GetService("ReplicatedStorage").GameStats["Player_".. game.Players.LocalPlayer.Name].Total.DeathCause.Value = "Â¿{Unknow}?"
 end)
 
 game.Workspace.Unknow.RushNew.Attachment.BillboardGui.ImageLabel.Image = GitPNG("https://github.com/Script5039392/Png/blob/main/Asd.png?raw=true", "WhyYouSee")
