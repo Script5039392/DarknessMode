@@ -1,13 +1,13 @@
 caa = 0
 tween = game:GetService("TweenService")
 local TestMultplayer = true
-if game:GetService("ReplicatedStorage"):FindFirstChild("DarknessMode") then
+if game:GetService("ReplicatedStorage"):FindFirstChild("a") then
     warn("Fuck")
     return true
 end
 
 local Test = Instance.new("Part")
-Test.Name = "DarknessMode"
+Test.Name = "a"
 Test.Parent = game:GetService("ReplicatedStorage")
 Test = 1
 
@@ -58,7 +58,6 @@ function getGitSoundId(GithubSoundPath: string, AssetName: string): Sound
 	return Sound 
 end
 
-CustomGitSound("https://github.com/Script5039392/Entities/blob/main/horror-ambience-01-66708.mp3?raw=true", 1, "DistortSound")
 GitPNG("https://github.com/Script5039392/Png/blob/main/Asd.png?raw=true", "WhyYouSee")
 GitPNG("https://github.com/Script5039392/Png/blob/main/OH_MAY_GODU.png?raw=true", "Slice")
 GitPNG("https://github.com/Script5039392/Png/blob/main/Picsart_25-01-17_22-05-43-970.png?raw=true", "Distort")
