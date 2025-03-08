@@ -2,7 +2,7 @@ caa = 0
 tween = game:GetService("TweenService")
 local TestMultplayer = true
 if game:GetService("ReplicatedStorage"):FindFirstChild("a") then
-    warn("Fuck")
+    warn("Fuck Uner")
     return true
 end
 
@@ -361,7 +361,7 @@ wait(1)
 
 local light = Instance.new("PointLight")
 light.Parent = game.Workspace.CurrentRooms[game:GetService("ReplicatedStorage").GameData.LatestRoom.Value].Parts.Floor
-light.Range = 12.5
+light.Range = 8
 light.Brightness = 1
 light.Color = Color3.fromRGB(160, 192 ,255)
 light.Enabled = true
